@@ -60,8 +60,9 @@
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->guard_name }}</td>
                             <td>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteData({{ $item->id }})">
-                                    <i data-feather='trash'></i></button>
+                                <button type="button" class="btn btn-sm btn-danger" data-url="{{ route('permission.delete', $item->id) }}" onclick="deleteData(this)">
+                                    <i data-feather='trash'></i>
+                                </button>
                             </td>
 
                         </tr>
@@ -84,7 +85,9 @@
 
 <script src="{{ asset('template/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <script>
-    function deleteData(id) {
+    function deleteData(button) {
+        var url = $(button).data('url'); // Mengambil data-url dari button
+
         Swal.fire({
             title: 'PERINGATAN!',
             text: "Yakin ingin menghapus?",
@@ -96,20 +99,19 @@
             cancelButtonText: 'Batal',
         }).then((result) => {
             if (result.isConfirmed) {
-                // Menggunakan AJAX untuk mengirim request delete
                 $.ajax({
-                    url: '{{ route("permission.delete", ":id") }}'.replace(':id', id), // Ganti dengan id yang dinamis
+                    url: url,
                     type: 'DELETE',
                     data: {
-                        "_token": "{{ csrf_token() }}", // Token CSRF untuk keamanan
+                        "_token": "{{ csrf_token() }}",
                     },
-                    success: function() { // Tidak perlu parameter response jika tidak dipakai
+                    success: function() {
                         Swal.fire(
                             'Deleted!',
                             'Data berhasil dihapus.',
                             'success'
                         ).then(() => {
-                            location.reload(); // Reload halaman setelah penghapusan berhasil
+                            location.reload();
                         });
                     },
                     error: function(xhr) {
@@ -124,6 +126,7 @@
         });
     }
 </script>
+
 
 
 
