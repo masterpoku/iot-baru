@@ -60,13 +60,11 @@
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->guard_name }}</td>
                             <td>
-                                <!-- Tombol Delete -->
-                                <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="{{ $item->id }}">Delete</button>
-
-                                <!-- Formulir Delete (disembunyikan) -->
-                                <form id="form-delete-{{ $item->id }}" action="{{ route('permission.delete', $item->id) }}" method="post" style="display: none;">
+                                <form method="post" action="{{ route('permission.delete', $item->id) }}" id="delete{{ $item->id }}">
                                     @csrf
                                     @method('delete')
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteData({{ $item->id }})">
+                                        <i data-feather='trash'></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -87,29 +85,23 @@
 {!! Html::script('template/assets/js/asset.js') !!}
 {!! Html::script('template/assets/js/asset-user.js') !!}
 
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="{{ asset('template/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <script>
-    // Event listener untuk tombol delete
-    document.querySelectorAll('.btn-delete').forEach(button => {
-        button.addEventListener('click', function() {
-            var permissionId = this.getAttribute('data-id');
-
-            swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this permission!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        // Submit form delete setelah konfirmasi
-                        document.getElementById('form-delete-' + permissionId).submit();
-                    } else {
-                        swal("Your permission is safe!");
-                    }
-                });
-        });
-    });
+    function deleteData(id) {
+        Swal.fire({
+            title: 'PERINGATAN!',
+            text: "Yakin ingin menghapus?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yakin',
+            cancelButtonText: 'Batal',
+        }).then((result) => {
+            if (result.value) {
+                $('#delete' + id).submit();
+            }
+        })
+    }
 </script>
 @endpush
