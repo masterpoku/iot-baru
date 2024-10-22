@@ -44,7 +44,8 @@ class PermissionsController extends Controller
     public function destroy(Request $request)
     {
         Permission::find($request->id)->delete();
-        return redirect()->route('permission.create')
-            ->with('success', 'List Permission deleted successfully');
+        // return redirect()->route('permission.create')
+        //     ->with('success', 'List Permission deleted successfully');
+        return response()->json(['success' => 'Permission deleted successfully.'], 200);
     }
 }

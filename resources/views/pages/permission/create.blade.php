@@ -60,13 +60,10 @@
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->guard_name }}</td>
                             <td>
-                                <form method="post" action="{{ route('permission.delete', $item->id) }}" id="delete{{ $item->id }}">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteData({{ $item->id }})">
-                                        <i data-feather='trash'></i></button>
-                                </form>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteData({{ $item->id }})">
+                                    <i data-feather='trash'></i></button>
                             </td>
+
                         </tr>
                         @endforeach
                     </tbody>
@@ -98,10 +95,37 @@
             confirmButtonText: 'Yakin',
             cancelButtonText: 'Batal',
         }).then((result) => {
-            if (result.value) {
-                $('#delete' + id).submit();
+            if (result.isConfirmed) {
+                // Menggunakan AJAX untuk mengirim request delete
+                $.ajax({
+                    url: '{{ route("permission.delete", ":id") }}'.replace(':id', id), // Ganti dengan id yang dinamis
+                    type: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}", // Token CSRF untuk keamanan
+                    },
+                    success: function() { // Tidak perlu parameter response jika tidak dipakai
+                        Swal.fire(
+                            'Deleted!',
+                            'Data berhasil dihapus.',
+                            'success'
+                        ).then(() => {
+                            location.reload(); // Reload halaman setelah penghapusan berhasil
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            'Gagal menghapus data.',
+                            'error'
+                        );
+                    }
+                });
             }
-        })
+        });
     }
 </script>
+
+
+
+
 @endpush
